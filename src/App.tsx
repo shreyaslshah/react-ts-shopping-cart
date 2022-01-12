@@ -48,12 +48,52 @@ function App() {
     return <div>sorry something went wrong</div>;
   }
 
-  const handleAddToCart = (clickedItem: cartItemType): void => {};
+  const handleAddToCart = (clickedItem: cartItemType): void => {
+    setCartItems(() => {
+      // is item already in the cart
+      const isItemInCart: cartItemType | undefined = cartItems.find(
+        (item) => item.id === clickedItem.id
+      );
+      if (isItemInCart) {
+        return cartItems.map((item) => {
+          if (item.id === clickedItem.id) {
+            return { ...item, amount: item.amount + 1 };
+          } else {
+            return item;
+          }
+        });
+      }
 
-  const handleRemoveFromCart = (id: number): void => {};
+      // first time item is added in the cart
+      return [...cartItems, { ...clickedItem, amount: 1 }];
+    });
+  };
+
+  const handleRemoveFromCart = (id: number): void => {
+    setCartItems(() => {
+      return cartItems.reduce(
+        (accumalator: cartItemType[], item: cartItemType) => {
+          if (item.id === id) {
+            if (item.amount === 1) {
+              return accumalator;
+            } else {
+              return [...accumalator, { ...item, amount: item.amount - 1 }];
+            }
+          } else {
+            return [...accumalator, item];
+          }
+        },
+        [] as cartItemType[]
+      );
+    });
+  };
 
   const getTotalItems = (cartItems: cartItemType[]): number => {
-    return 0;
+    let total: number = 0;
+    cartItems.map((item) => {
+      total = total + item.amount;
+    });
+    return total;
   };
 
   return (
